@@ -29,7 +29,17 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewHorizon', function ($user) {
-            return Str::endsWith($user->email, ['@viding.co', '@viding.id']);
+            $allowedDomains = config('horizon.allowed_domains', []);
+
+            $allowedDomains = array_map('trim', $allowedDomains);
+
+            $allowedDomains = array_filter($allowedDomains);
+
+            if (empty($allowedDomains)) {
+                return false;
+            }
+
+            return Str::endsWith($user->email, $allowedDomains);
         });
     }
 }

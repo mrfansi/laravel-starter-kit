@@ -22,7 +22,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('viewPulse', function ($user) {
-            return Str::endsWith($user->email, ['@viding.co', '@viding.id']);
+            $allowedDomains = config('pulse.allowed_domains', []);
+
+            $allowedDomains = array_map('trim', $allowedDomains);
+
+            $allowedDomains = array_filter($allowedDomains);
+
+            if (empty($allowedDomains)) {
+                return false;
+            }
+
+            return Str::endsWith($user->email, $allowedDomains);
         });
     }
 }

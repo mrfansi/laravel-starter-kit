@@ -32,6 +32,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allowed Domains for Horizon Access
+    |--------------------------------------------------------------------------
+    |
+    | A comma-separated list of email domains allowed to access the Horizon
+    | dashboard in non-local environments. Read from the .env file.
+    |
+    */
+
+    'allowed_domains' => explode(',', env('HORIZON_ALLOWED_DOMAINS', '')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Horizon Redis Connection
     |--------------------------------------------------------------------------
     |

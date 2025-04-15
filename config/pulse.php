@@ -34,6 +34,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allowed Domains for Pulse Access
+    |--------------------------------------------------------------------------
+    |
+    | A comma-separated list of email domains allowed to access the Pulse
+    | dashboard in non-local environments. Read from the .env file.
+    |
+    */
+
+    'allowed_domains' => explode(',', env('PULSE_ALLOWED_DOMAINS', '')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Pulse Master Switch
     |--------------------------------------------------------------------------
     |

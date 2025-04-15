@@ -46,6 +46,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allowed Domains for Telescope Access
+    |--------------------------------------------------------------------------
+    |
+    | A comma-separated list of email domains allowed to access the Telescope
+    | dashboard in non-local environments. Read from the .env file.
+    |
+    */
+
+    'allowed_domains' => explode(',', env('TELESCOPE_ALLOWED_DOMAINS', '')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Telescope Storage Driver
     |--------------------------------------------------------------------------
     |

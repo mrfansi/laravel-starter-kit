@@ -57,7 +57,17 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewTelescope', function ($user) {
-            return Str::endsWith($user->email, ['@viding.co', '@viding.id']);
+            $allowedDomains = config('telescope.allowed_domains', []);
+
+            $allowedDomains = array_map('trim', $allowedDomains);
+
+            $allowedDomains = array_filter($allowedDomains);
+
+            if (empty($allowedDomains)) {
+                return false;
+            }
+
+            return Str::endsWith($user->email, $allowedDomains);
         });
     }
 }
