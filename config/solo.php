@@ -49,6 +49,7 @@ return [
         'About' => 'php artisan solo:about',
         'Logs' => EnhancedTailCommand::file(storage_path('logs/laravel.log')),
         'Vite' => 'npm run dev',
+        'Horizon' => Command::from('php artisan horizon'),
         'Make' => new MakeCommand,
         // 'HTTP' => 'php artisan serve',
 
@@ -57,7 +58,6 @@ return [
         'Reverb' => Command::from('php artisan reverb:start --debug')->lazy(),
         'Pint' => Command::from('./vendor/bin/pint --ansi')->lazy(),
         'Queue' => Command::from('php artisan queue:work')->lazy(),
-        'Horizon' => Command::from('php artisan horizon')->lazy(),
         'Tests' => Command::from('php artisan test --colors=always')->withEnv(['APP_ENV' => 'testing'])->lazy(),
     ],
 

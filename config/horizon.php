@@ -192,9 +192,37 @@ return [
     */
 
     'defaults' => [
-        'supervisor-1' => [
+        'worker-default' => [
             'connection' => 'redis',
             'queue' => ['default'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 1,
+            'timeout' => 60,
+            'nice' => 0,
+        ],
+
+        'worker-whatsapp' => [
+            'connection' => 'redis',
+            'queue' => ['whatsapp'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 1,
+            'timeout' => 60,
+            'nice' => 0,
+        ],
+
+        'worker-email' => [
+            'connection' => 'redis',
+            'queue' => ['email'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
@@ -209,7 +237,19 @@ return [
 
     'environments' => [
         'production' => [
-            'supervisor-1' => [
+            'worker-default' => [
+                'maxProcesses' => 10,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+            ],
+
+            'worker-whatsapp' => [
+                'maxProcesses' => 10,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+            ],
+
+            'worker-email' => [
                 'maxProcesses' => 10,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
@@ -217,7 +257,15 @@ return [
         ],
 
         'local' => [
-            'supervisor-1' => [
+            'worker-default' => [
+                'maxProcesses' => 3,
+            ],
+
+            'worker-whatsapp' => [
+                'maxProcesses' => 3,
+            ],
+
+            'worker-email' => [
                 'maxProcesses' => 3,
             ],
         ],
