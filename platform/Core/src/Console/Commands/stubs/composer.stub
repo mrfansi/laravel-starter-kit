@@ -1,0 +1,24 @@
+{
+    "name": "platform/{module}",
+    "description": "{Module} module for Laravel Starter Kit",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Platform\\{Module}\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "platform/core": "*"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Platform\\{Module}\\Providers\\{Module}ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

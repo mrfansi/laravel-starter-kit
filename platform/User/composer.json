@@ -1,0 +1,24 @@
+{
+    "name": "platform/user",
+    "description": "User module for Laravel Starter Kit",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Platform\\User\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "platform/core": "*"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Platform\\User\\Providers\\UserServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
