@@ -39,7 +39,7 @@ php artisan make:module Blog --all
 
 Each module follows this structure:
 
-```
+```bash
 ModuleName/
 ├── composer.json         # Module's composer configuration
 ├── database/
