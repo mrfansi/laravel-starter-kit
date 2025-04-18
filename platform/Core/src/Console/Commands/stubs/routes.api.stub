@@ -3,6 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Platform\{Module}\Http\Controllers\Api\{Module}Controller;
 
-Route::middleware(['api'])->prefix('api')->group(function () {
+Route::middleware(['api'])->prefix('api/{module}')->name('api.{module}.')->group(function () {
     Route::apiResource('{module}s', {Module}Controller::class);
 });

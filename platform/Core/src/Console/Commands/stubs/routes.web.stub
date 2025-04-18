@@ -3,6 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Platform\{Module}\Http\Controllers\{Module}Controller;
 
-Route::middleware(['web'])->group(function () {
+Route::prefix('{module}')->name('{module}.')->middleware(['web'])->group(function () {
     Route::resource('{module}s', {Module}Controller::class);
 });

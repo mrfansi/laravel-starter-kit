@@ -13,9 +13,9 @@ class {Module}Controller extends Controller
      */
     public function index()
     {
-        ${module}s = {Module}::all();
+        $items = {Module}::all();
         
-        return response()->json(['data' => ${module}s]);
+        return response()->json(['data' => $items]);
     }
 
     /**
@@ -27,39 +27,39 @@ class {Module}Controller extends Controller
             // Add validation rules here
         ]);
 
-        ${module} = {Module}::create($validated);
+        $item = {Module}::create($validated);
 
-        return response()->json(['data' => ${module}, 'message' => '{Module} created successfully'], 201);
+        return response()->json(['data' => $item, 'message' => '{Module} created successfully'], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show({Module} ${module})
+    public function show({Module} $item)
     {
-        return response()->json(['data' => ${module}]);
+        return response()->json(['data' => $item]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, {Module} ${module})
+    public function update(Request $request, {Module} $item)
     {
         $validated = $request->validate([
             // Add validation rules here
         ]);
 
-        ${module}->update($validated);
+        $item->update($validated);
 
-        return response()->json(['data' => ${module}, 'message' => '{Module} updated successfully']);
+        return response()->json(['data' => $item, 'message' => '{Module} updated successfully']);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy({Module} ${module})
+    public function destroy({Module} $item)
     {
-        ${module}->delete();
+        $item->delete();
 
         return response()->json(['message' => '{Module} deleted successfully']);
     }

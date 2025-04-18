@@ -1,0 +1,24 @@
+{
+    "name": "platform/admin",
+    "description": "Admin module for Laravel Starter Kit",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Platform\\Admin\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "platform/core": "*"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Platform\\Admin\\Providers\\AdminServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
