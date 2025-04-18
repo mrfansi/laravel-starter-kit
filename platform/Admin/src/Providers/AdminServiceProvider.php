@@ -2,10 +2,12 @@
 
 namespace Platform\Admin\Providers;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Routing\Router;
 use Platform\Admin\Http\Middleware\AdminAuthenticate;
 use Platform\Admin\Http\Middleware\CheckAdminPermission;
 use Platform\Admin\Http\Middleware\CheckAdminRole;
+use Platform\Admin\Models\FactoryResolution;
 use Platform\Core\Providers\ModuleServiceProvider;
 
 class AdminServiceProvider extends ModuleServiceProvider
@@ -46,7 +48,8 @@ class AdminServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-
+        // Bootstrap factory resolution
+        FactoryResolution::bootstrap();
 
         // Load migrations
         $this->loadMigrationsFrom("{$this->modulePath}database/migrations");
