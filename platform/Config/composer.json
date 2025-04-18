@@ -7,13 +7,15 @@
         "psr-4": {
             "Platform\\Config\\": "src/",
             "Platform\\Config\\Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "classmap": [
+            "src/Providers"
+        ]
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Platform\\Config\\Providers\\ConfigServiceProvider",
-                "Platform\\Config\\Providers\\ConfigAppServiceProvider"
+                "Platform\\Config\\Providers\\ConfigServiceProvider"
             ],
             "aliases": {
                 "DynamicConfig": "Platform\\Config\\Facades\\Config"

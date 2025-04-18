@@ -24,6 +24,17 @@ class ConfigServiceProvider extends ServiceProvider
             return new ConfigRepository($app->make('platform.config'));
         });
 
+        // Register the middleware singleton
+        $this->app->singleton('platform.config.middleware', function ($app) {
+            return new LoadDatabaseConfigurations();
+        });
+
+        // Register the middleware in the HTTP kernel
+        $this->app->booted(function () {
+            $kernel = $this->app->make('Illuminate\Foundation\Http\Kernel');
+            $kernel->pushMiddleware(LoadDatabaseConfigurations::class);
+        });
+
         // Merge module configuration
         $this->mergeConfigFrom(__DIR__ . '/../../config/config.php', 'platform.config');
     }

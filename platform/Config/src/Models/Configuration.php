@@ -48,9 +48,15 @@ class Configuration extends Model
      */
     public function setValueAttribute($value): void
     {
-        $this->attributes['value'] = match ($this->type) {
-            'array', 'json' => json_encode($value),
-            default => (string) $value,
-        };
+        if (is_array($value) || is_object($value)) {
+            $this->attributes['value'] = json_encode($value);
+        } else {
+            $this->attributes['value'] = match ($this->attributes['type'] ?? 'string') {
+                'array', 'json' => is_string($value) ? $value : json_encode($value),
+                'boolean' => (string) (bool) $value,
+                'integer' => (string) (int) $value,
+                default => (string) $value,
+            };
+        }
     }
 }

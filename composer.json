@@ -42,7 +42,9 @@
             "Database\\Seeders\\": "database/seeders/",
             "Platform\\Core\\": "platform/Core/src/",
             "Platform\\User\\": "platform/User/src/",
-            "Platform\\Admin\\": "platform/Admin/src/"
+            "Platform\\Admin\\": "platform/Admin/src/",
+            "Platform\\Config\\": "platform/Config/src/",
+            "Platform\\Config\\Database\\Seeders\\": "platform/Config/database/seeders/"
         },
         "files": [
             "platform/Core/src/Support/helpers.php"

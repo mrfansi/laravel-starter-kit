@@ -60,10 +60,9 @@ class SyncConfigCommand extends Command
 
         // Get all environment variables
         $envVariables = $_ENV;
-        $dotenv = parse_ini_file(base_path('.env'));
-        if ($dotenv) {
-            $envVariables = array_merge($envVariables, $dotenv);
-        }
+        
+        // Use Laravel's env() helper to get values directly instead of parsing the file
+        // This is more reliable than parse_ini_file which can have issues with certain .env formats
 
         $count = 0;
         foreach ($envVariables as $key => $value) {
