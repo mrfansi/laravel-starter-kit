@@ -30,10 +30,10 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadMigrationsFrom($this->modulePath . '/database/migrations');
-        $this->loadViewsFrom($this->modulePath . '/resources/views', $this->moduleName);
-        $this->loadRoutesFrom($this->modulePath . '/routes/web.php');
-        $this->loadRoutesFrom($this->modulePath . '/routes/api.php');
+        $this->loadMigrationsFrom("{$this->modulePath}/database/migrations");
+        $this->loadViewsFrom("{$this->modulePath}/resources/views", $this->moduleName);
+        $this->loadRoutesFrom("{$this->modulePath}/routes/web.php");
+        $this->loadRoutesFrom("{$this->modulePath}/routes/api.php");
     }
 
     /**
@@ -41,11 +41,11 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $configPath = $this->modulePath . '/config/' . $this->moduleName . '.php';
-        
+        $configPath = "{$this->modulePath}/config/{$this->moduleName}.php";
+
         if (file_exists($configPath)) {
             $this->publishes([
-                $configPath => config_path($this->moduleName . '.php'),
+                $configPath => config_path("{$this->moduleName}.php"),
             ], 'config');
 
             $this->mergeConfigFrom(
@@ -59,10 +59,10 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected function registerViews(): void
     {
-        $viewsPath = $this->modulePath . '/resources/views';
+        $viewsPath = "{$this->modulePath}/resources/views";
 
         $this->publishes([
-            $viewsPath => resource_path('views/modules/' . $this->moduleName),
+            $viewsPath => resource_path("views/modules/{$this->moduleName}"),
         ], 'views');
     }
 }

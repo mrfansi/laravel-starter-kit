@@ -1,6 +1,6 @@
 {
     "name": "platform/{module}",
-    "description": "{Module} module for Laravel Starter Kit",
+    "description": "{Module} module for Laravel",
     "type": "library",
     "license": "MIT",
     "autoload": {

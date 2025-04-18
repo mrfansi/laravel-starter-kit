@@ -6,18 +6,16 @@ class ModuleManager
 {
     /**
      * Get all available modules
-     *
-     * @return array
      */
     public static function getModules(): array
     {
         $modules = [];
         $modulesPath = base_path('platform');
-        $directories = array_filter(glob($modulesPath . '/*'), 'is_dir');
+        $directories = array_filter(glob("$modulesPath/*"), 'is_dir');
 
         foreach ($directories as $directory) {
             $moduleName = basename($directory);
-            if ($moduleName !== 'Core' && file_exists($directory . '/composer.json')) {
+            if ($moduleName !== 'Core' && file_exists("$directory/composer.json")) {
                 $modules[] = $moduleName;
             }
         }
@@ -27,9 +25,6 @@ class ModuleManager
 
     /**
      * Check if a module exists
-     *
-     * @param string $name
-     * @return bool
      */
     public static function hasModule(string $name): bool
     {
@@ -38,14 +33,11 @@ class ModuleManager
 
     /**
      * Get module path
-     *
-     * @param string $name
-     * @return string|null
      */
     public static function getModulePath(string $name): ?string
     {
-        $path = base_path('platform/' . $name);
-        
+        $path = base_path("platform/$name");
+
         return file_exists($path) ? $path : null;
     }
 }
