@@ -1,0 +1,23 @@
+{
+    "name": "platform/config",
+    "description": "Dynamic configuration module for Laravel Starter Kit",
+    "type": "laravel-module",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Platform\\Config\\": "src/",
+            "Platform\\Config\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Platform\\Config\\Providers\\ConfigServiceProvider",
+                "Platform\\Config\\Providers\\ConfigAppServiceProvider"
+            ],
+            "aliases": {
+                "DynamicConfig": "Platform\\Config\\Facades\\Config"
+            }
+        }
+    }
+}
