@@ -2,6 +2,11 @@
 
 use Platform\Admin\Models\Admin;
 use Platform\Admin\Models\Role;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(TestCase::class);
+uses(RefreshDatabase::class);
 
 test('admin can be created', function () {
     $admin = Admin::factory()->create([

@@ -17,7 +17,7 @@ test('setting index page can be rendered', function () {
 
     // Create a role with necessary permissions
     $role = Role::factory()->create(['name' => 'super-admin']);
-    $permission = Permission::factory()->create(['name' => 'setting.view']);
+    $permission = Permission::factory()->create(['name' => 'admin.settings']);
     $role->permissions()->attach($permission);
     $admin->roles()->attach($role);
 
@@ -42,6 +42,12 @@ test('settings can be updated', function () {
     // Create an admin user
     $admin = Admin::factory()->create();
 
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'admin.settings']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
+
     // Act as the admin user
     $this->actingAs($admin, 'admin');
 
@@ -49,7 +55,7 @@ test('settings can be updated', function () {
     Cache::forget('admin_settings');
 
     // Submit the form to update settings
-    $response = $this->post(route('admin.settings.update'), [
+    $response = $this->put(route('admin.settings.update'), [
         'site_name' => 'Updated Site Name',
         'site_description' => 'Updated site description',
         'contact_email' => 'updated@example.com',
@@ -72,11 +78,17 @@ test('settings validation works', function () {
     // Create an admin user
     $admin = Admin::factory()->create();
 
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'admin.settings']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
+
     // Act as the admin user
     $this->actingAs($admin, 'admin');
 
     // Submit the form with invalid data
-    $response = $this->post(route('admin.settings.update'), [
+    $response = $this->put(route('admin.settings.update'), [
         'site_name' => '', // Empty site name (invalid)
         'contact_email' => 'not-an-email', // Invalid email
         'items_per_page' => 3, // Too small (min is 5)
@@ -90,6 +102,12 @@ test('settings are cached properly', function () {
 
     // Create an admin user
     $admin = Admin::factory()->create();
+
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'admin.settings']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
 
     // Act as the admin user
     $this->actingAs($admin, 'admin');
@@ -124,6 +142,12 @@ test('boolean settings are properly converted', function () {
     // Create an admin user
     $admin = Admin::factory()->create();
 
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'admin.settings']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
+
     // Act as the admin user
     $this->actingAs($admin, 'admin');
 
@@ -131,14 +155,14 @@ test('boolean settings are properly converted', function () {
     Cache::forget('admin_settings');
 
     // Submit the form with checkbox values
-    $response = $this->post(route('admin.settings.update'), [
+    $response = $this->put(route('admin.settings.update'), [
         'site_name' => 'Test Site',
         'site_description' => 'Test description',
         'contact_email' => 'test@example.com',
         'items_per_page' => 10,
-        'enable_registration' => 'on', // Checkbox is checked
-        // 'enable_social_login' is not sent (checkbox unchecked)
-        'maintenance_mode' => 'on', // Checkbox is checked
+        'enable_registration' => true, // Checkbox is checked
+        'enable_social_login' => false, // Checkbox is unchecked
+        'maintenance_mode' => true // Checkbox is checked
     ]);
 
     // Assert the user is redirected to the settings page

@@ -44,6 +44,12 @@ test('user index page can filter by search', function () {
     // Create an admin user
     $admin = Admin::factory()->create();
 
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'user.view']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
+
     // Act as the admin user
     $this->actingAs($admin, 'admin');
 
@@ -77,6 +83,12 @@ test('user index page can sort results', function () {
     // Create an admin user
     $admin = Admin::factory()->create();
 
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'user.view']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
+
     // Act as the admin user
     $this->actingAs($admin, 'admin');
 
@@ -102,6 +114,12 @@ test('user create page can be rendered', function () {
     // Create an admin user
     $admin = Admin::factory()->create();
 
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'user.view']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
+
     // Act as the admin user
     $this->actingAs($admin, 'admin');
 
@@ -125,6 +143,12 @@ test('user can be created', function () {
 
     // Create an admin user
     $admin = Admin::factory()->create();
+
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'user.view']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
 
     // Act as the admin user
     $this->actingAs($admin, 'admin');
@@ -170,6 +194,12 @@ test('user show page can be rendered', function () {
     // Create an admin user
     $admin = Admin::factory()->create();
 
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'user.view']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
+
     // Act as the admin user
     $this->actingAs($admin, 'admin');
 
@@ -193,6 +223,12 @@ test('user edit page can be rendered', function () {
 
     // Create an admin user
     $admin = Admin::factory()->create();
+
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'user.view']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
 
     // Act as the admin user
     $this->actingAs($admin, 'admin');
@@ -222,6 +258,12 @@ test('user can be updated', function () {
 
     // Create an admin user
     $admin = Admin::factory()->create();
+
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'user.view']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
 
     // Act as the admin user
     $this->actingAs($admin, 'admin');
@@ -269,6 +311,12 @@ test('user password can be updated', function () {
     // Create an admin user
     $admin = Admin::factory()->create();
 
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'user.view']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
+
     // Act as the admin user
     $this->actingAs($admin, 'admin');
 
@@ -300,6 +348,12 @@ test('user can be deleted', function () {
 
     // Create an admin user
     $admin = Admin::factory()->create();
+
+    // Create a role with necessary permissions
+    $role = Role::factory()->create(['name' => 'super-admin']);
+    $permission = Permission::factory()->create(['name' => 'user.view']);
+    $role->permissions()->attach($permission);
+    $admin->roles()->attach($role);
 
     // Act as the admin user
     $this->actingAs($admin, 'admin');

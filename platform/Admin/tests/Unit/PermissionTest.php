@@ -2,6 +2,11 @@
 
 use Platform\Admin\Models\Permission;
 use Platform\Admin\Models\Role;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(TestCase::class);
+uses(RefreshDatabase::class);
 
 test('permission can be created', function () {
     $permission = Permission::factory()->create([

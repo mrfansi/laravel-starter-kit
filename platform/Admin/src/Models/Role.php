@@ -9,6 +9,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Role extends Model
 {
     use HasFactory;
+    
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    protected static function newFactory()
+    {
+        return \Platform\Admin\Database\Factories\RoleFactory::new();
+    }
 
     /**
      * The attributes that are mass assignable.

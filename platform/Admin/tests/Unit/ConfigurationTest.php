@@ -1,6 +1,12 @@
 <?php
 
 use Platform\Admin\Models\Configuration;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+
+uses(TestCase::class);
+uses(RefreshDatabase::class);
 
 test('configuration can be created', function () {
     $config = Configuration::factory()->create([

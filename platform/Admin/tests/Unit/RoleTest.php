@@ -3,6 +3,11 @@
 use Platform\Admin\Models\Role;
 use Platform\Admin\Models\Admin;
 use Platform\Admin\Models\Permission;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(TestCase::class);
+uses(RefreshDatabase::class);
 
 test('role can be created', function () {
     $role = Role::factory()->create([
