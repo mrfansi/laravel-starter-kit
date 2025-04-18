@@ -24,14 +24,14 @@
 
         <!-- Configuration Form -->
         <div class="bg-white shadow-md rounded-lg overflow-hidden p-6">
-            <form action="{{ route('admin.config.update', $configuration) }}" method="POST">
+            <form action="{{ route('admin.config.update', $config) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Key -->
                     <div class="col-span-1">
                         <label for="key" class="block text-sm font-medium text-gray-700 mb-2">Key *</label>
-                        <input type="text" name="key" id="key" value="{{ old('key', $configuration->key) }}" required
+                        <input type="text" name="key" id="key" value="{{ old('key', $config->key) }}" required
                                class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                placeholder="app.name">
                         <p class="text-xs text-gray-500 mt-1">Unique identifier for this configuration (e.g., app.name, mail.host)</p>
@@ -43,7 +43,7 @@
                         <select name="group" id="group" required
                                 class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             @foreach($groupOptions as $groupKey => $groupName)
-                                <option value="{{ $groupKey }}" {{ old('group', $configuration->group) === $groupKey ? 'selected' : '' }}>{{ $groupName }}</option>
+                                <option value="{{ $groupKey }}" {{ old('group', $config->group) === $groupKey ? 'selected' : '' }}>{{ $groupName }}</option>
                             @endforeach
                         </select>
                         <p class="text-xs text-gray-500 mt-1">Category for this configuration</p>
@@ -55,7 +55,7 @@
                         <select name="type" id="type" required
                                 class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             @foreach($types as $typeKey => $typeName)
-                                <option value="{{ $typeKey }}" {{ old('type', $configuration->type) === $typeKey ? 'selected' : '' }}>{{ $typeName }}</option>
+                                <option value="{{ $typeKey }}" {{ old('type', $config->type) === $typeKey ? 'selected' : '' }}>{{ $typeName }}</option>
                             @endforeach
                         </select>
                         <p class="text-xs text-gray-500 mt-1">Data type of this configuration</p>
@@ -66,7 +66,7 @@
                         <label for="value" class="block text-sm font-medium text-gray-700 mb-2">Value</label>
                         <textarea name="value" id="value" rows="3"
                                   class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Configuration value">{{ old('value', $configuration->type === 'array' || $configuration->type === 'json' ? json_encode($configuration->value, JSON_PRETTY_PRINT) : $configuration->value) }}</textarea>
+                                  placeholder="Configuration value">{{ old('value', $config->type === 'array' || $config->type === 'json' ? json_encode($config->value, JSON_PRETTY_PRINT) : $config->value) }}</textarea>
                         <p class="text-xs text-gray-500 mt-1">For boolean, use 'true' or 'false'. For array/JSON, enter valid JSON.</p>
                     </div>
 
@@ -75,19 +75,19 @@
                         <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                         <textarea name="description" id="description" rows="2"
                                   class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Description of this configuration">{{ old('description', $configuration->description) }}</textarea>
+                                  placeholder="Description of this configuration">{{ old('description', $config->description) }}</textarea>
                     </div>
 
                     <!-- Flags -->
                     <div class="col-span-2 flex space-x-6">
                         <div class="flex items-center">
-                            <input type="checkbox" name="is_system" id="is_system" value="1" {{ old('is_system', $configuration->is_system) ? 'checked' : '' }}
+                            <input type="checkbox" name="is_system" id="is_system" value="1" {{ old('is_system', $config->is_system) ? 'checked' : '' }}
                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                             <label for="is_system" class="ml-2 block text-sm text-gray-700">System Configuration</label>
                             <span class="ml-1 text-xs text-gray-500">(Used by the system internally)</span>
                         </div>
                         <div class="flex items-center">
-                            <input type="checkbox" name="is_public" id="is_public" value="1" {{ old('is_public', $configuration->is_public) ? 'checked' : '' }}
+                            <input type="checkbox" name="is_public" id="is_public" value="1" {{ old('is_public', $config->is_public) ? 'checked' : '' }}
                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                             <label for="is_public" class="ml-2 block text-sm text-gray-700">Public Configuration</label>
                             <span class="ml-1 text-xs text-gray-500">(Accessible via public API)</span>

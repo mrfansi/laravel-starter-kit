@@ -3,32 +3,40 @@
 namespace Platform\Admin\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Platform\Config\Models\Configuration;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Validator;
+use Platform\Admin\Models\Configuration;
 
 class ConfigController extends Controller
 {
     /**
      * Display a listing of the configurations.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
     public function index(Request $request)
     {
-        $group = $request->query('group');
+        $search = $request->input('search');
+        $group = $request->input('group');
+
         $query = Configuration::query();
-        
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('key', 'like', "%{$search}%")
+                    ->orWhere('value', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
         if ($group) {
             $query->where('group', $group);
         }
-        
+
         $configurations = $query->orderBy('group')->orderBy('key')->paginate(10);
         $groups = Configuration::distinct()->pluck('group');
-        
-        return view('config::index', compact('configurations', 'groups', 'group'));
+
+        return view('admin::config.index', compact('configurations', 'groups', 'search', 'group'));
     }
 
     /**
@@ -41,12 +49,12 @@ class ConfigController extends Controller
         // Get distinct groups for the dropdown
         $groups = Configuration::distinct()->pluck('group');
         $groupOptions = [];
-        
+
         // Create an array of group options
         foreach ($groups as $group) {
             $groupOptions[$group] = ucfirst($group);
         }
-        
+
         // Add some default groups if none exist
         if (empty($groupOptions)) {
             $groupOptions = [
@@ -56,10 +64,10 @@ class ConfigController extends Controller
                 'cache' => 'Cache',
                 'queue' => 'Queue',
                 'services' => 'Services',
-                'custom' => 'Custom'
+                'custom' => 'Custom',
             ];
         }
-        
+
         // Define available data types
         $types = [
             'string' => 'String',
@@ -67,16 +75,15 @@ class ConfigController extends Controller
             'float' => 'Float',
             'boolean' => 'Boolean',
             'array' => 'Array',
-            'json' => 'JSON'
+            'json' => 'JSON',
         ];
-        
-        return view('config::create', compact('groupOptions', 'types'));
+
+        return view('admin::config.create', compact('groupOptions', 'types'));
     }
 
     /**
      * Store a newly created configuration in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
@@ -85,7 +92,7 @@ class ConfigController extends Controller
         if ($request->hasFile('import_file')) {
             return $this->importFromJson($request);
         }
-        
+
         // Regular configuration creation
         $validator = Validator::make($request->all(), [
             'key' => 'required|string|max:255|unique:configurations,key',
@@ -134,7 +141,6 @@ class ConfigController extends Controller
     /**
      * Show the form for editing the specified configuration.
      *
-     * @param  \Platform\Config\Models\Configuration  $config
      * @return \Illuminate\View\View
      */
     public function edit(Configuration $config)
@@ -142,12 +148,12 @@ class ConfigController extends Controller
         // Get distinct groups for the dropdown
         $groups = Configuration::distinct()->pluck('group');
         $groupOptions = [];
-        
+
         // Create an array of group options
         foreach ($groups as $group) {
             $groupOptions[$group] = ucfirst($group);
         }
-        
+
         // Add some default groups if none exist
         if (empty($groupOptions)) {
             $groupOptions = [
@@ -157,10 +163,10 @@ class ConfigController extends Controller
                 'cache' => 'Cache',
                 'queue' => 'Queue',
                 'services' => 'Services',
-                'custom' => 'Custom'
+                'custom' => 'Custom',
             ];
         }
-        
+
         // Define available data types
         $types = [
             'string' => 'String',
@@ -168,27 +174,25 @@ class ConfigController extends Controller
             'float' => 'Float',
             'boolean' => 'Boolean',
             'array' => 'Array',
-            'json' => 'JSON'
+            'json' => 'JSON',
         ];
-        
-        return view('config::edit', [
+
+        return view('admin::config.edit', [
             'configuration' => $config,
             'groupOptions' => $groupOptions,
-            'types' => $types
+            'types' => $types,
         ]);
     }
 
     /**
      * Update the specified configuration in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Platform\Config\Models\Configuration  $config
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, Configuration $config)
     {
         $validator = Validator::make($request->all(), [
-            'key' => 'required|string|max:255|unique:configurations,key,' . $config->id,
+            'key' => 'required|string|max:255|unique:configurations,key,'.$config->id,
             'value' => 'required',
             'type' => 'required|string|in:string,integer,float,boolean,array,json',
             'group' => 'required|string|max:255',
@@ -234,7 +238,6 @@ class ConfigController extends Controller
     /**
      * Remove the specified configuration from storage.
      *
-     * @param  \Platform\Config\Models\Configuration  $config
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Configuration $config)
@@ -253,41 +256,137 @@ class ConfigController extends Controller
     public function syncToEnv()
     {
         try {
+            // Get all configurations
             $configurations = Configuration::all();
-            $envContent = file_get_contents(base_path('.env'));
-            
+
+            // Read current .env file
+            $envPath = base_path('.env');
+            $envContent = file_get_contents($envPath);
+            $envLines = explode("\n", $envContent);
+
+            // Create a backup of the current .env file
+            $backupPath = base_path('.env.backup-'.date('Y-m-d-His'));
+            file_put_contents($backupPath, $envContent);
+
+            // Process each configuration
             foreach ($configurations as $config) {
-                $key = strtoupper(str_replace('.', '_', $config->key));
-                $value = $config->value;
-                
-                // Format the value based on type
-                if (is_bool($value)) {
-                    $value = $value ? 'true' : 'false';
-                } elseif (is_array($value) || is_object($value)) {
-                    $value = json_encode($value);
+                // Skip configurations that shouldn't be in .env
+                if (strpos($config->key, '.') !== false) {
+                    continue; // Skip config keys with dots
                 }
-                
-                // Escape quotes in the value
-                $value = is_string($value) ? '"' . str_replace('"', '\\"', $value) . '"' : $value;
-                
-                // Check if the key already exists in the .env file
-                if (preg_match('/^' . $key . '=.*$/m', $envContent)) {
-                    // Update existing key
-                    $envContent = preg_replace('/^' . $key . '=.*$/m', $key . '=' . $value, $envContent);
-                } else {
-                    // Add new key
-                    $envContent .= "\n" . $key . '=' . $value;
+
+                // Convert config key to ENV format (uppercase, underscores)
+                $envKey = strtoupper(str_replace('.', '_', $config->key));
+
+                // Format the value based on type
+                $value = $this->formatValueForEnv($config->value, $config->type);
+
+                // Check if the key already exists in .env
+                $keyExists = false;
+                foreach ($envLines as $i => $line) {
+                    if (preg_match('/^'.preg_quote($envKey).'=/', $line)) {
+                        $envLines[$i] = $envKey.'='.$value;
+                        $keyExists = true;
+                        break;
+                    }
+                }
+
+                // If key doesn't exist, add it to the end
+                if (! $keyExists) {
+                    $envLines[] = $envKey.'='.$value;
                 }
             }
-            
-            file_put_contents(base_path('.env'), $envContent);
-            
+
+            // Write the updated content back to .env
+            file_put_contents($envPath, implode("\n", $envLines));
+
             return redirect()->route('admin.config.index')
-                ->with('success', 'Configurations synced to .env file successfully.');
+                ->with('success', 'Configurations synced to .env file successfully. Backup created at '.$backupPath);
         } catch (\Exception $e) {
             return redirect()->route('admin.config.index')
-                ->with('error', 'Failed to sync configurations to .env file: ' . $e->getMessage());
+                ->with('error', 'Failed to sync configurations to .env file: '.$e->getMessage());
         }
+    }
+
+    /**
+     * Format the value for .env file based on its type.
+     *
+     * @param  mixed  $value
+     * @param  string  $type
+     * @return string
+     */
+    private function formatValueForEnv($value, $type)
+    {
+        switch ($type) {
+            case 'boolean':
+                return $value ? 'true' : 'false';
+            case 'integer':
+                return (string) intval($value);
+            case 'array':
+            case 'json':
+                if (is_string($value)) {
+                    return $value;
+                }
+
+                return json_encode($value);
+            default:
+                // For strings, wrap in quotes if it contains spaces
+                if (is_string($value) && strpos($value, ' ') !== false) {
+                    return '"'.$value.'"';
+                }
+
+                return (string) $value;
+        }
+    }
+
+    /**
+     * Parse a value from .env file.
+     *
+     * @param  string  $value
+     * @return mixed
+     */
+    private function parseEnvValue($value)
+    {
+        // Remove quotes if present
+        if (strpos($value, '"') === 0 && strrpos($value, '"') === strlen($value) - 1) {
+            $value = substr($value, 1, -1);
+        } elseif (strpos($value, "'") === 0 && strrpos($value, "'") === strlen($value) - 1) {
+            $value = substr($value, 1, -1);
+        }
+
+        // Convert special values
+        if (strtolower($value) === 'true') {
+            return true;
+        } elseif (strtolower($value) === 'false') {
+            return false;
+        } elseif (strtolower($value) === 'null') {
+            return null;
+        } elseif (is_numeric($value)) {
+            return strpos($value, '.') !== false ? (float) $value : (int) $value;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Guess the type of a value.
+     *
+     * @param  mixed  $value
+     * @return string
+     */
+    private function guessValueType($value)
+    {
+        if (strtolower($value) === 'true' || strtolower($value) === 'false') {
+            return 'boolean';
+        } elseif (is_numeric($value) && strpos($value, '.') === false) {
+            return 'integer';
+        } elseif (strpos($value, '[') === 0 && strrpos($value, ']') === strlen($value) - 1) {
+            return 'array';
+        } elseif (strpos($value, '{') === 0 && strrpos($value, '}') === strlen($value) - 1) {
+            return 'json';
+        }
+
+        return 'string';
     }
 
     /**
@@ -295,10 +394,72 @@ class ConfigController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
+    public function syncFromEnv()
+    {
+        try {
+            $envContent = file_get_contents(base_path('.env'));
+            $lines = explode("\n", $envContent);
+
+            DB::beginTransaction();
+
+            foreach ($lines as $line) {
+                // Skip comments and empty lines
+                if (empty($line) || strpos($line, '#') === 0) {
+                    continue;
+                }
+
+                // Parse key and value
+                if (strpos($line, '=') !== false) {
+                    [$key, $value] = explode('=', $line, 2);
+                    $key = trim($key);
+                    $value = trim($value);
+
+                    // Convert env key format to config key format
+                    $configKey = strtolower(str_replace('_', '.', $key));
+
+                    // Determine value type
+                    $type = $this->guessValueType($value);
+
+                    // Parse the value
+                    $value = $this->parseEnvValue($value);
+
+                    // Check if configuration already exists
+                    $config = Configuration::where('key', $configKey)->first();
+
+                    if ($config) {
+                        // Update existing configuration
+                        $config->update([
+                            'value' => $value,
+                            'type' => $type,
+                        ]);
+                    } else {
+                        // Create new configuration
+                        Configuration::create([
+                            'key' => $configKey,
+                            'value' => $value,
+                            'type' => $type,
+                            'group' => 'env',
+                            'description' => 'Imported from .env file',
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.config.index')
+                ->with('success', 'Configurations synced from .env file successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->route('admin.config.index')
+                ->with('error', 'Failed to sync configurations from .env file: '.$e->getMessage());
+        }
+    }
+
     /**
      * Import configurations from a JSON file.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function importFromJson(Request $request)
@@ -317,26 +478,26 @@ class ConfigController extends Controller
             // Read the JSON file
             $jsonContent = file_get_contents($request->file('import_file')->path());
             $configurations = json_decode($jsonContent, true);
-            
+
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Invalid JSON format: ' . json_last_error_msg());
+                throw new \Exception('Invalid JSON format: '.json_last_error_msg());
             }
-            
-            if (!is_array($configurations)) {
+
+            if (! is_array($configurations)) {
                 throw new \Exception('Invalid configuration format. Expected an array of configurations.');
             }
-            
+
             DB::beginTransaction();
-            
+
             $imported = 0;
             $updated = 0;
-            
+
             foreach ($configurations as $item) {
                 // Validate each item
-                if (!isset($item['key']) || !isset($item['value']) || !isset($item['type'])) {
+                if (! isset($item['key']) || ! isset($item['value']) || ! isset($item['type'])) {
                     continue;
                 }
-                
+
                 // Process the value based on type
                 $value = $item['value'];
                 switch ($item['type']) {
@@ -356,10 +517,10 @@ class ConfigController extends Controller
                         }
                         break;
                 }
-                
+
                 // Check if configuration already exists
                 $config = Configuration::where('key', $item['key'])->first();
-                
+
                 if ($config) {
                     // Update existing configuration
                     $config->update([
@@ -381,95 +542,16 @@ class ConfigController extends Controller
                     $imported++;
                 }
             }
-            
+
             DB::commit();
-            
+
             return redirect()->route('admin.config.index')
                 ->with('success', "Import successful: {$imported} configurations created, {$updated} configurations updated.");
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('admin.config.index')
-                ->with('error', 'Failed to import configurations: ' . $e->getMessage());
-        }
-    }
 
-    public function syncFromEnv()
-    {
-        try {
-            $envContent = file_get_contents(base_path('.env'));
-            $lines = explode("\n", $envContent);
-            
-            DB::beginTransaction();
-            
-            foreach ($lines as $line) {
-                // Skip comments and empty lines
-                if (empty($line) || strpos($line, '#') === 0) {
-                    continue;
-                }
-                
-                // Parse key and value
-                if (strpos($line, '=') !== false) {
-                    list($key, $value) = explode('=', $line, 2);
-                    $key = trim($key);
-                    $value = trim($value);
-                    
-                    // Convert env key format to config key format
-                    $configKey = strtolower(str_replace('_', '.', $key));
-                    
-                    // Determine value type
-                    $type = 'string';
-                    if ($value === 'true' || $value === 'false') {
-                        $type = 'boolean';
-                        $value = ($value === 'true');
-                    } elseif (is_numeric($value) && strpos($value, '.') !== false) {
-                        $type = 'float';
-                        $value = (float) $value;
-                    } elseif (is_numeric($value)) {
-                        $type = 'integer';
-                        $value = (int) $value;
-                    } elseif (strpos($value, '[') === 0 || strpos($value, '{') === 0) {
-                        $type = 'json';
-                        $value = json_decode($value, true);
-                    }
-                    
-                    // Remove quotes if present
-                    if (is_string($value)) {
-                        if ((strpos($value, '"') === 0 && substr($value, -1) === '"') || 
-                            (strpos($value, "'") === 0 && substr($value, -1) === "'")) {
-                            $value = substr($value, 1, -1);
-                        }
-                    }
-                    
-                    // Check if configuration already exists
-                    $config = Configuration::where('key', $configKey)->first();
-                    
-                    if ($config) {
-                        // Update existing configuration
-                        $config->update([
-                            'value' => $value,
-                            'type' => $type,
-                        ]);
-                    } else {
-                        // Create new configuration
-                        Configuration::create([
-                            'key' => $configKey,
-                            'value' => $value,
-                            'type' => $type,
-                            'group' => 'env',
-                            'description' => 'Imported from .env file',
-                        ]);
-                    }
-                }
-            }
-            
-            DB::commit();
-            
             return redirect()->route('admin.config.index')
-                ->with('success', 'Configurations synced from .env file successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->route('admin.config.index')
-                ->with('error', 'Failed to sync configurations from .env file: ' . $e->getMessage());
+                ->with('error', 'Failed to import configurations: '.$e->getMessage());
         }
     }
 }

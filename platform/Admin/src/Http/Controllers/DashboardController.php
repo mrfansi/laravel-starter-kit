@@ -2,10 +2,10 @@
 
 namespace Platform\Admin\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Platform\Admin\Models\Admin;
-use Platform\Admin\Models\Role;
+use Platform\Admin\Models\Configuration;
 use Platform\Admin\Models\Permission;
+use Platform\Admin\Models\Role;
 
 class DashboardController extends Controller
 {
@@ -20,9 +20,10 @@ class DashboardController extends Controller
             'admins' => Admin::count(),
             'roles' => Role::count(),
             'permissions' => Permission::count(),
+            'configurations' => class_exists(Configuration::class) ? Configuration::count() : 0,
             'recent_admins' => Admin::latest()->take(5)->get(),
         ];
-        
+
         return view('admin::dashboard.index', compact('stats'));
     }
 }
