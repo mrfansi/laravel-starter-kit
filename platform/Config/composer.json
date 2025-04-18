@@ -2,7 +2,10 @@
     "name": "platform/config",
     "description": "Dynamic configuration module for Laravel Starter Kit",
     "type": "laravel-module",
-    "require": {},
+    "require": {
+        "php": "^8.2 || ^8.3 || ^8.4",
+        "platform/core": "*"
+    },
     "autoload": {
         "psr-4": {
             "Platform\\Config\\": "src/",
