@@ -5,7 +5,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Platform\\Admin\\": "src/"
+            "Platform\\Admin\\": "src/",
+            "Platform\\Admin\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "require": {

@@ -42,6 +42,7 @@
             "Platform\\Core\\": "platform/Core/src/",
             "Platform\\User\\": "platform/User/src/",
             "Platform\\Admin\\": "platform/Admin/src/",
+            "Platform\\Admin\\Database\\Seeders\\": "platform/Admin/database/seeders/",
             "Platform\\Config\\": "platform/Config/src/",
             "Platform\\Config\\Database\\Seeders\\": "platform/Config/database/seeders/"
         },
