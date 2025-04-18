@@ -41,7 +41,7 @@
                         <label for="group" class="block text-sm font-medium text-gray-700 mb-2">Group *</label>
                         <select name="group" id="group" required
                                 class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            @foreach($groups as $groupKey => $groupName)
+                            @foreach($groupOptions as $groupKey => $groupName)
                                 <option value="{{ $groupKey }}" {{ old('group') === $groupKey ? 'selected' : '' }}>{{ $groupName }}</option>
                             @endforeach
                         </select>

@@ -25,7 +25,7 @@ class ConfigController extends Controller
             $query->where('group', $group);
         }
         
-        $configurations = $query->orderBy('group')->orderBy('key')->get();
+        $configurations = $query->orderBy('group')->orderBy('key')->paginate(10);
         $groups = Configuration::distinct()->pluck('group');
         
         return view('config::index', compact('configurations', 'groups', 'group'));
@@ -38,7 +38,39 @@ class ConfigController extends Controller
      */
     public function create()
     {
-        return view('config::create');
+        // Get distinct groups for the dropdown
+        $groups = Configuration::distinct()->pluck('group');
+        $groupOptions = [];
+        
+        // Create an array of group options
+        foreach ($groups as $group) {
+            $groupOptions[$group] = ucfirst($group);
+        }
+        
+        // Add some default groups if none exist
+        if (empty($groupOptions)) {
+            $groupOptions = [
+                'app' => 'App',
+                'mail' => 'Mail',
+                'database' => 'Database',
+                'cache' => 'Cache',
+                'queue' => 'Queue',
+                'services' => 'Services',
+                'custom' => 'Custom'
+            ];
+        }
+        
+        // Define available data types
+        $types = [
+            'string' => 'String',
+            'integer' => 'Integer',
+            'float' => 'Float',
+            'boolean' => 'Boolean',
+            'array' => 'Array',
+            'json' => 'JSON'
+        ];
+        
+        return view('config::create', compact('groupOptions', 'types'));
     }
 
     /**
@@ -49,6 +81,12 @@ class ConfigController extends Controller
      */
     public function store(Request $request)
     {
+        // Check if this is a file import request
+        if ($request->hasFile('import_file')) {
+            return $this->importFromJson($request);
+        }
+        
+        // Regular configuration creation
         $validator = Validator::make($request->all(), [
             'key' => 'required|string|max:255|unique:configurations,key',
             'value' => 'required',
@@ -101,7 +139,43 @@ class ConfigController extends Controller
      */
     public function edit(Configuration $config)
     {
-        return view('config::edit', ['configuration' => $config]);
+        // Get distinct groups for the dropdown
+        $groups = Configuration::distinct()->pluck('group');
+        $groupOptions = [];
+        
+        // Create an array of group options
+        foreach ($groups as $group) {
+            $groupOptions[$group] = ucfirst($group);
+        }
+        
+        // Add some default groups if none exist
+        if (empty($groupOptions)) {
+            $groupOptions = [
+                'app' => 'App',
+                'mail' => 'Mail',
+                'database' => 'Database',
+                'cache' => 'Cache',
+                'queue' => 'Queue',
+                'services' => 'Services',
+                'custom' => 'Custom'
+            ];
+        }
+        
+        // Define available data types
+        $types = [
+            'string' => 'String',
+            'integer' => 'Integer',
+            'float' => 'Float',
+            'boolean' => 'Boolean',
+            'array' => 'Array',
+            'json' => 'JSON'
+        ];
+        
+        return view('config::edit', [
+            'configuration' => $config,
+            'groupOptions' => $groupOptions,
+            'types' => $types
+        ]);
     }
 
     /**
@@ -221,6 +295,104 @@ class ConfigController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
+    /**
+     * Import configurations from a JSON file.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function importFromJson(Request $request)
+    {
+        // Validate the uploaded file
+        $validator = Validator::make($request->all(), [
+            'import_file' => 'required|file|mimes:json|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.config.index')
+                ->withErrors($validator);
+        }
+
+        try {
+            // Read the JSON file
+            $jsonContent = file_get_contents($request->file('import_file')->path());
+            $configurations = json_decode($jsonContent, true);
+            
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('Invalid JSON format: ' . json_last_error_msg());
+            }
+            
+            if (!is_array($configurations)) {
+                throw new \Exception('Invalid configuration format. Expected an array of configurations.');
+            }
+            
+            DB::beginTransaction();
+            
+            $imported = 0;
+            $updated = 0;
+            
+            foreach ($configurations as $item) {
+                // Validate each item
+                if (!isset($item['key']) || !isset($item['value']) || !isset($item['type'])) {
+                    continue;
+                }
+                
+                // Process the value based on type
+                $value = $item['value'];
+                switch ($item['type']) {
+                    case 'integer':
+                        $value = (int) $value;
+                        break;
+                    case 'float':
+                        $value = (float) $value;
+                        break;
+                    case 'boolean':
+                        $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+                        break;
+                    case 'array':
+                    case 'json':
+                        if (is_string($value)) {
+                            $value = json_decode($value, true);
+                        }
+                        break;
+                }
+                
+                // Check if configuration already exists
+                $config = Configuration::where('key', $item['key'])->first();
+                
+                if ($config) {
+                    // Update existing configuration
+                    $config->update([
+                        'value' => $value,
+                        'type' => $item['type'],
+                        'group' => $item['group'] ?? $config->group,
+                        'description' => $item['description'] ?? $config->description,
+                    ]);
+                    $updated++;
+                } else {
+                    // Create new configuration
+                    Configuration::create([
+                        'key' => $item['key'],
+                        'value' => $value,
+                        'type' => $item['type'],
+                        'group' => $item['group'] ?? 'imported',
+                        'description' => $item['description'] ?? 'Imported from JSON file',
+                    ]);
+                    $imported++;
+                }
+            }
+            
+            DB::commit();
+            
+            return redirect()->route('admin.config.index')
+                ->with('success', "Import successful: {$imported} configurations created, {$updated} configurations updated.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('admin.config.index')
+                ->with('error', 'Failed to import configurations: ' . $e->getMessage());
+        }
+    }
+
     public function syncFromEnv()
     {
         try {

@@ -22,6 +22,9 @@
                         <i class="fas fa-upload mr-2"></i> Sync to .env
                     </button>
                 </form>
+                <button id="importBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-colors">
+                    <i class="fas fa-file-import mr-2"></i> Import
+                </button>
             </div>
         </div>
 
@@ -127,15 +130,17 @@
         </div>
 
         <!-- Pagination -->
+        @if(method_exists($configurations, 'links'))
         <div class="mt-4">
             {{ $configurations->appends(['group' => $group])->links() }}
         </div>
+        @endif
 
         <!-- Import Modal -->
         <div id="importModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center" style="display: none;">
             <div class="bg-white rounded-lg p-8 max-w-md w-full">
                 <h2 class="text-xl font-semibold mb-4">Import Configurations</h2>
-                <form action="{{ route('config.configurations.import') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.config.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-4">
                         <label for="import_file" class="block text-sm font-medium text-gray-700 mb-2">JSON File</label>
