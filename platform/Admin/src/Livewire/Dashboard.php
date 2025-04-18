@@ -1,28 +1,30 @@
 <?php
 
-namespace Platform\Admin\Http\Controllers;
+namespace Platform\Admin\Livewire;
 
-use Illuminate\Http\Request;
+use Livewire\Component;
 use Platform\Admin\Models\Admin;
 use Platform\Admin\Models\Role;
 use Platform\Admin\Models\Permission;
 
-class DashboardController extends Controller
+class Dashboard extends Component
 {
-    /**
-     * Display the dashboard.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function index()
+    public $stats = [];
+    
+    public function mount()
     {
-        $stats = [
+        $this->stats = [
             'admins' => Admin::count(),
             'roles' => Role::count(),
             'permissions' => Permission::count(),
             'recent_admins' => Admin::latest()->take(5)->get(),
         ];
-        
-        return view('admin::dashboard.index', compact('stats'));
+    }
+    
+    public function render()
+    {
+        return view('admin::livewire.dashboard', [
+            'stats' => $this->stats
+        ]);
     }
 }

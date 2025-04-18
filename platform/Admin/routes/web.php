@@ -1,15 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 use Platform\Admin\Http\Controllers\AdminController;
 use Platform\Admin\Http\Controllers\Auth\LoginController;
 use Platform\Admin\Http\Controllers\DashboardController;
 use Platform\Admin\Http\Controllers\RoleController;
 use Platform\Admin\Http\Controllers\SettingController;
 use Platform\Admin\Http\Controllers\UserController;
+use Platform\Admin\Http\Controllers\ConfigController;
 
 // Admin routes
 Route::prefix('admin')->name('admin.')->group(function () {
+
     // Guest routes
     Route::middleware('web')->group(function () {
         // Authentication routes
@@ -41,6 +44,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('admin.permission:admin.settings')->group(function () {
             Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
             Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+        });
+        
+        // Configurations
+        Route::middleware('admin.permission:admin.settings')->group(function () {
+            Route::resource('configurations', ConfigController::class)->names([
+                'index' => 'config.index',
+                'create' => 'config.create',
+                'store' => 'config.store',
+                'edit' => 'config.edit',
+                'update' => 'config.update',
+                'destroy' => 'config.destroy',
+            ])->parameters([
+                'configurations' => 'config'
+            ]);
+            Route::post('configurations/sync-to-env', [ConfigController::class, 'syncToEnv'])->name('config.sync-to-env');
+            Route::post('configurations/sync-from-env', [ConfigController::class, 'syncFromEnv'])->name('config.sync-from-env');
         });
     });
 });

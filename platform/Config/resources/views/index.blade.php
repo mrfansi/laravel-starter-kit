@@ -7,26 +7,38 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-semibold">Configuration Management</h1>
             <div class="flex space-x-2">
-                <a href="{{ route('config.configurations.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                    Add New Configuration
+                <a href="{{ route('admin.config.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors">
+                    <i class="fas fa-plus mr-2"></i> Add New Configuration
                 </a>
-                <button id="importBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
-                    Import
-                </button>
-                <a href="{{ route('config.configurations.export') }}" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
-                    Export
-                </a>
+                <form action="{{ route('admin.config.sync-from-env') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors">
+                        <i class="fas fa-download mr-2"></i> Sync from .env
+                    </button>
+                </form>
+                <form action="{{ route('admin.config.sync-to-env') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors">
+                        <i class="fas fa-upload mr-2"></i> Sync to .env
+                    </button>
+                </form>
             </div>
         </div>
 
         <!-- Group Tabs -->
         <div class="mb-6 border-b border-gray-200">
             <ul class="flex flex-wrap -mb-px">
-                @foreach($groups as $groupKey => $groupName)
+                <li class="mr-2">
+                    <a href="{{ route('admin.config.index') }}" 
+                       class="inline-block p-4 {{ !$group ? 'border-b-2 border-indigo-500 text-indigo-600' : 'border-b-2 border-transparent hover:border-gray-300 text-gray-500 hover:text-gray-600' }}">
+                        All
+                    </a>
+                </li>
+                @foreach($groups as $groupName)
                     <li class="mr-2">
-                        <a href="{{ route('config.configurations.index', ['group' => $groupKey]) }}" 
-                           class="inline-block p-4 {{ $group === $groupKey ? 'border-b-2 border-blue-500 text-blue-600' : 'border-b-2 border-transparent hover:border-gray-300 text-gray-500 hover:text-gray-600' }}">
-                            {{ $groupName }}
+                        <a href="{{ route('admin.config.index', ['group' => $groupName]) }}" 
+                           class="inline-block p-4 {{ $group === $groupName ? 'border-b-2 border-indigo-500 text-indigo-600' : 'border-b-2 border-transparent hover:border-gray-300 text-gray-500 hover:text-gray-600' }}">
+                            {{ ucfirst($groupName) }}
                         </a>
                     </li>
                 @endforeach
@@ -55,9 +67,8 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Public</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">System</th>
                         <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
@@ -79,24 +90,27 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ ucfirst($config->type) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                    {{ $config->group }}
+                                </span>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ Str::limit($config->description, 50) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $config->is_public ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                                    {{ $config->is_public ? 'Yes' : 'No' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $config->is_system ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800' }}">
-                                    {{ $config->is_system ? 'Yes' : 'No' }}
-                                </span>
-                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
-                                    <a href="{{ route('config.configurations.edit', $config) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                    <form action="{{ route('config.configurations.destroy', $config) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this configuration?');">
+                                    <a href="{{ route('admin.config.edit', $config) }}" class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </a>
+                                    <form action="{{ route('admin.config.destroy', $config) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this configuration?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                                        <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
                                     </form>
                                 </div>
                             </td>

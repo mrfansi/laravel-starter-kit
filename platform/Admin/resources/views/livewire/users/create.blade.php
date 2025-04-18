@@ -1,8 +1,4 @@
-@extends('admin::layouts.app')
-
-@section('title', 'Create User')
-
-@section('content')
+<div wire:init="$refresh">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold">Create User</h1>
         <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
@@ -11,34 +7,33 @@
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-        <form action="{{ route('admin.users.store') }}" method="POST" class="p-6">
-            @csrf
+        <form wire:submit="createUser" class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Name -->
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-white" placeholder="Enter name">
+                    <input wire:model="name" type="text" id="name" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-white" placeholder="Enter name">
                     @error('name') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Email -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                    <input type="email" name="email" id="email" value="{{ old('email') }}" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-white" placeholder="Enter email">
+                    <input wire:model="email" type="email" id="email" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-white" placeholder="Enter email">
                     @error('email') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Password -->
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-                    <input type="password" name="password" id="password" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-white" placeholder="Enter password">
+                    <input wire:model="password" type="password" id="password" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-white" placeholder="Enter password">
                     @error('password') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Password Confirmation -->
                 <div>
                     <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
-                    <input type="password" name="password_confirmation" id="password_confirmation" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-white" placeholder="Confirm password">
+                    <input wire:model="password_confirmation" type="password" id="password_confirmation" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-white" placeholder="Confirm password">
                 </div>
             </div>
 
@@ -48,12 +43,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     @foreach($roles as $role)
                         <label class="inline-flex items-center">
-                            <input type="checkbox" name="roles[]" value="{{ $role->id }}" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:border-gray-700">
+                            <input wire:model="selectedRoles" type="checkbox" value="{{ $role->id }}" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-900 dark:border-gray-700">
                             <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ $role->display_name }}</span>
                         </label>
                     @endforeach
                 </div>
-                @error('roles') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                @error('selectedRoles') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
             </div>
 
             <div class="mt-6 flex justify-end">
@@ -63,4 +58,4 @@
             </div>
         </form>
     </div>
-@endsection
+</div>

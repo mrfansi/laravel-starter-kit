@@ -1,0 +1,87 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Custom Admin styles */
+.admin-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+}
+.dark .admin-card {
+    background-color: rgb(31, 41, 55);
+}
+
+.admin-button-primary {
+    padding: 0.5rem 1rem;
+    background-color: rgb(79, 70, 229);
+    color: white;
+    border-radius: 0.375rem;
+    transition-property: background-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+.admin-button-primary:hover {
+    background-color: rgb(67, 56, 202);
+}
+
+.admin-button-secondary {
+    padding: 0.5rem 1rem;
+    background-color: rgb(75, 85, 99);
+    color: white;
+    border-radius: 0.375rem;
+    transition-property: background-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+.admin-button-secondary:hover {
+    background-color: rgb(55, 65, 81);
+}
+
+.admin-button-danger {
+    padding: 0.5rem 1rem;
+    background-color: rgb(220, 38, 38);
+    color: white;
+    border-radius: 0.375rem;
+    transition-property: background-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+.admin-button-danger:hover {
+    background-color: rgb(185, 28, 28);
+}
+
+.admin-input {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-width: 1px;
+    border-color: rgb(209, 213, 219);
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+.admin-input:focus {
+    outline: none;
+    border-color: rgb(79, 70, 229);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+.dark .admin-input {
+    background-color: rgb(17, 24, 39);
+    color: white;
+    border-color: rgb(55, 65, 81);
+}
+
+.admin-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: rgb(55, 65, 81);
+}
+.dark .admin-label {
+    color: rgb(209, 213, 219);
+}

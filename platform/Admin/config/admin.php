@@ -54,7 +54,7 @@ return [
     */
     'menu' => [
         'dashboard' => [
-            'icon' => 'dashboard',
+            'icon' => 'tachometer-alt',
             'title' => 'Dashboard',
             'route' => 'admin.dashboard',
             'permission' => 'admin.access',
@@ -66,13 +66,19 @@ return [
             'permission' => 'user.view',
         ],
         'roles' => [
-            'icon' => 'shield',
+            'icon' => 'shield-alt',
             'title' => 'Roles & Permissions',
             'route' => 'admin.roles.index',
             'permission' => 'role.view',
         ],
+        'config' => [
+            'icon' => 'sliders-h',
+            'title' => 'Configurations',
+            'route' => 'admin.config.index',
+            'permission' => 'admin.settings',
+        ],
         'settings' => [
-            'icon' => 'settings',
+            'icon' => 'cogs',
             'title' => 'Settings',
             'route' => 'admin.settings.index',
             'permission' => 'admin.settings',

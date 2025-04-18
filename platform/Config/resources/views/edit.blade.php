@@ -6,8 +6,8 @@
     <div class="container mx-auto px-4 py-6">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-semibold">Edit Configuration</h1>
-            <a href="{{ route('config.configurations.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
-                Back to List
+            <a href="{{ route('admin.config.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Back to List
             </a>
         </div>
 
@@ -24,7 +24,7 @@
 
         <!-- Configuration Form -->
         <div class="bg-white shadow-md rounded-lg overflow-hidden p-6">
-            <form action="{{ route('config.configurations.update', $configuration) }}" method="POST">
+            <form action="{{ route('admin.config.update', $configuration) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

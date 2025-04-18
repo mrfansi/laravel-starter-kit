@@ -3,8 +3,6 @@
 namespace Platform\Admin\Providers;
 
 use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\ServiceProvider;
 use Platform\Admin\Http\Middleware\AdminAuthenticate;
 use Platform\Admin\Http\Middleware\CheckAdminPermission;
 use Platform\Admin\Http\Middleware\CheckAdminRole;
@@ -20,7 +18,7 @@ class AdminServiceProvider extends ModuleServiceProvider
     /**
      * Module path
      */
-    protected string $modulePath = __DIR__ . '/../../';
+    protected string $modulePath = __DIR__.'/../../';
 
     /**
      * Register services.
@@ -28,12 +26,12 @@ class AdminServiceProvider extends ModuleServiceProvider
     public function register(): void
     {
         parent::register();
-        
+
         // Register config
         $this->mergeConfigFrom(
-            $this->modulePath . 'config/admin.php', 'admin'
+            $this->modulePath.'config/admin.php', 'admin'
         );
-        
+
         // Register middleware
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('admin.auth', AdminAuthenticate::class);
@@ -47,42 +45,47 @@ class AdminServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
-        
+
+
+
         // Load migrations
-        $this->loadMigrationsFrom($this->modulePath . 'database/migrations');
-        
+        $this->loadMigrationsFrom("{$this->modulePath}database/migrations");
+
         // Load views
-        $this->loadViewsFrom($this->modulePath . 'resources/views', 'admin');
+        $this->loadViewsFrom("{$this->modulePath}resources/views", 'admin');
         
+        // Load Config module views
+        $this->loadViewsFrom(base_path('platform/Config/resources/views'), 'config');
+
         // Load translations
-        $this->loadTranslationsFrom($this->modulePath . 'resources/lang', 'admin');
-        
+        $this->loadTranslationsFrom($this->modulePath.'resources/lang', 'admin');
+
         // Register commands
         if ($this->app->runningInConsole()) {
             $this->commands([
                 // Register commands here
             ]);
-            
+
             // Publish config
             $this->publishes([
-                $this->modulePath . 'config/admin.php' => config_path('admin.php'),
+                "{$this->modulePath}config/admin.php" => config_path('admin.php'),
             ], 'admin-config');
-            
+
             // Publish views
             $this->publishes([
-                $this->modulePath . 'resources/views' => resource_path('views/vendor/admin'),
+                "{$this->modulePath}resources/views" => resource_path('views/vendor/admin'),
             ], 'admin-views');
-            
+
             // Publish assets
             $this->publishes([
-                $this->modulePath . 'resources/assets' => public_path('vendor/admin'),
+                "{$this->modulePath}resources/assets" => public_path('vendor/admin'),
             ], 'admin-assets');
         }
-        
+
         // Register policy
         $this->registerPolicies();
     }
-    
+
     /**
      * Register policies.
      */
