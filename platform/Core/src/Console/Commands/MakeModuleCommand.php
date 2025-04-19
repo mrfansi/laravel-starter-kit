@@ -201,8 +201,8 @@ class MakeModuleCommand extends Command
         $stub = File::get(__DIR__.'/stubs/routes.web.stub');
 
         return str_replace(
-            ['{Module}'],
-            [$name],
+            ['{Module}', '{module}'],
+            [$name, strtolower($name)],
             $stub
         );
     }
@@ -215,8 +215,8 @@ class MakeModuleCommand extends Command
         $stub = File::get(__DIR__.'/stubs/routes.api.stub');
 
         return str_replace(
-            ['{Module}'],
-            [$name],
+            ['{Module}', '{module}'],
+            [$name, strtolower($name)],
             $stub
         );
     }
@@ -229,8 +229,8 @@ class MakeModuleCommand extends Command
         $stub = File::get(__DIR__.'/stubs/controller.stub');
 
         return str_replace(
-            ['{Module}'],
-            [$name],
+            ['{Module}', '{module}'],
+            [$name, strtolower($name)],
             $stub
         );
     }
@@ -243,8 +243,8 @@ class MakeModuleCommand extends Command
         $stub = File::get(__DIR__.'/stubs/controller.api.stub');
 
         return str_replace(
-            ['{Module}'],
-            [$name],
+            ['{Module}', '{module}'],
+            [$name, strtolower($name)],
             $stub
         );
     }
@@ -257,8 +257,8 @@ class MakeModuleCommand extends Command
         $stub = File::get(__DIR__.'/stubs/model.stub');
 
         return str_replace(
-            ['{Module}'],
-            [$name],
+            ['{Module}', '{module}'],
+            [$name, strtolower($name)],
             $stub
         );
     }
