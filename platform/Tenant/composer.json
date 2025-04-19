@@ -1,0 +1,21 @@
+{
+    "name": "platform/tenant",
+    "description": "Tenant module for Laravel Starter Kit",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Platform\\Tenant\\": "src/"
+        }
+    },
+    "require": {
+        "stancl/tenancy": "^3.7"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Platform\\Tenant\\Providers\\TenantServiceProvider"
+            ]
+        }
+    }
+}
