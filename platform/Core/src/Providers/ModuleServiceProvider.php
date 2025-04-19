@@ -33,7 +33,12 @@ abstract class ModuleServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom("{$this->modulePath}/database/migrations");
         $this->loadViewsFrom("{$this->modulePath}/resources/views", $this->moduleName);
         $this->loadRoutesFrom("{$this->modulePath}/routes/web.php");
-        $this->loadRoutesFrom("{$this->modulePath}/routes/api.php");
+        
+        // Only load API routes if the file exists
+        $apiRoutesPath = "{$this->modulePath}/routes/api.php";
+        if (file_exists($apiRoutesPath)) {
+            $this->loadRoutesFrom($apiRoutesPath);
+        }
     }
 
     /**

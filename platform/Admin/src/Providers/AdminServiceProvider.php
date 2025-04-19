@@ -34,11 +34,7 @@ class AdminServiceProvider extends ModuleServiceProvider
             $this->modulePath.'config/admin.php', 'admin'
         );
 
-        // Register middleware
-        $router = $this->app->make(Router::class);
-        $router->aliasMiddleware('admin.auth', AdminAuthenticate::class);
-        $router->aliasMiddleware('admin.role', CheckAdminRole::class);
-        $router->aliasMiddleware('admin.permission', CheckAdminPermission::class);
+        // Middleware registration moved to boot() method
     }
 
     /**
@@ -47,6 +43,12 @@ class AdminServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        // Register middleware
+        $router = $this->app->make(Router::class);
+        $router->aliasMiddleware('admin.auth', AdminAuthenticate::class);
+        $router->aliasMiddleware('admin.role', CheckAdminRole::class);
+        $router->aliasMiddleware('admin.permission', CheckAdminPermission::class);
 
         // Bootstrap factory resolution
         FactoryResolution::bootstrap();

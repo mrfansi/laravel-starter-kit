@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
 use Platform\Admin\Http\Controllers\Auth\LoginController;
 use Platform\Admin\Http\Controllers\DashboardController;
 use Platform\Admin\Http\Controllers\RoleController;

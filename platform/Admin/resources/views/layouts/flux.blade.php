@@ -29,20 +29,29 @@
             <!-- Sidebar -->
             <div id="sidebar" class="bg-indigo-800 text-white w-64 min-h-screen p-4 hidden lg:block">
                 <div class="flex items-center justify-center mb-8">
-                    <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold">{{ config('admin.dashboard.title', 'Admin Panel') }}</a>
+                    <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold">{{ config('admin.dashboard.title') ?? 'Admin Panel' }}</a>
                 </div>
                 <nav>
                     <ul class="space-y-2">
-                        @foreach(config('admin.menu') as $key => $item)
-                            @if(!isset($item['permission']) || Auth::guard('admin')->user()->roles()->whereHas('permissions', function($query) use ($item) { $query->where('name', $item['permission']); })->exists())
-                                <li>
-                                    <a href="{{ route($item['route']) }}" class="flex items-center space-x-2 p-2 rounded-md hover:bg-indigo-700 {{ request()->routeIs($item['route']) ? 'bg-indigo-700' : '' }}">
-                                        <i class="fas fa-{{ $item['icon'] ?? 'circle' }} w-5"></i>
-                                        <span>{{ $item['title'] }}</span>
-                                    </a>
-                                </li>
-                            @endif
-                        @endforeach
+                        @if(config('admin.menu'))
+                            @foreach(config('admin.menu') as $key => $item)
+                                @if(!isset($item['permission']) || Auth::guard('admin')->user()->roles()->whereHas('permissions', function($query) use ($item) { $query->where('name', $item['permission']); })->exists())
+                                    <li>
+                                        @if(isset($item['route']) && Route::has($item['route']))
+                                            <a href="{{ route($item['route']) }}" class="flex items-center space-x-2 p-2 rounded-md hover:bg-indigo-700 {{ request()->routeIs($item['route']) ? 'bg-indigo-700' : '' }}">
+                                                <i class="fas fa-{{ $item['icon'] ?? 'circle' }} w-5"></i>
+                                                <span>{{ $item['title'] }}</span>
+                                            </a>
+                                        @else
+                                            <div class="flex items-center space-x-2 p-2 rounded-md text-gray-400">
+                                                <i class="fas fa-{{ $item['icon'] ?? 'circle' }} w-5"></i>
+                                                <span>{{ $item['title'] }}</span>
+                                            </div>
+                                        @endif
+                                    </li>
+                                @endif
+                            @endforeach
+                        @endif
                     </ul>
                 </nav>
             </div>
