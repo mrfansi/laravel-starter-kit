@@ -24,7 +24,6 @@ return [
      * To configure their behavior, see the config keys below.
      */
     'bootstrappers' => [
-        // Menggunakan DatabaseTenancyBootstrapper untuk single database
         Stancl\Tenancy\Bootstrappers\DatabaseTenancyBootstrapper::class,
         Stancl\Tenancy\Bootstrappers\CacheTenancyBootstrapper::class,
         Stancl\Tenancy\Bootstrappers\FilesystemTenancyBootstrapper::class,
@@ -36,7 +35,7 @@ return [
      * Database tenancy config. Used by DatabaseTenancyBootstrapper.
      */
     'database' => [
-        'central_connection' => env('DB_CONNECTION', 'mysql'),
+        'central_connection' => env('DB_CONNECTION', 'central'),
 
         /**
          * Connection used as a "template" for the dynamically created tenant database connection.
@@ -45,22 +44,32 @@ return [
         'template_tenant_connection' => null,
 
         /**
-         * Using a single database with table prefixing.
-         * https://tenancyforlaravel.com/docs/v3/single-database-tenancy/
+         * Tenant database names are created like this:
+         * prefix + tenant_id + suffix.
          */
         'prefix' => 'tenant',
         'suffix' => '',
 
         /**
-         * We're using a single database, so we don't need database managers.
-         * Instead we'll use the prefix_tenants strategy.
+         * TenantDatabaseManagers are classes that handle the creation & deletion of tenant databases.
          */
-        'managers' => [],
+        'managers' => [
+            'sqlite' => Stancl\Tenancy\TenantDatabaseManagers\SQLiteDatabaseManager::class,
+            'mysql' => Stancl\Tenancy\TenantDatabaseManagers\MySQLDatabaseManager::class,
+            'pgsql' => Stancl\Tenancy\TenantDatabaseManagers\PostgreSQLDatabaseManager::class,
 
         /**
-         * Use the tenant_prefix strategy for single database tenancy
+         * Use this database manager for MySQL to have a DB user created for each tenant database.
+         * You can customize the grants given to these users by changing the $grants property.
          */
-        'tenant_prefix_strategy' => true,
+            // 'mysql' => Stancl\Tenancy\TenantDatabaseManagers\PermissionControlledMySQLDatabaseManager::class,
+
+        /**
+         * Disable the pgsql manager above, and enable the one below if you
+         * want to separate tenant DBs by schemas rather than databases.
+         */
+            // 'pgsql' => Stancl\Tenancy\TenantDatabaseManagers\PostgreSQLSchemaManager::class, // Separate by schema instead of database
+        ],
     ],
 
     /**
